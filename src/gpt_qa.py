@@ -199,7 +199,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-ft", "--fine_tuning", help="Use Fine Tune Model instead of QA one", action="store_true")
     parser.add_argument(
-        "-p", "--prints", help="Print ranked messages", default=False)
+        "-p", "--prints", help="Print ranked messages", action="store_true")
 
     args = parser.parse_args()
     main(args.query,
