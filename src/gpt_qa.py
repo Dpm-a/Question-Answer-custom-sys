@@ -16,7 +16,8 @@ GPT_MODEL = "gpt-3.5-turbo"
 nlp = spacy.load('it_core_news_sm')
 df3 = pd.read_csv("../data/embedded_stip.csv")
 # convert embeddings from CSV str type back to list type
-df3['embedding_text_answer'] = df3['embedding_text_answer'].apply(ast.literal_eval)
+df3['embedding_text_answer'] = df3['embedding_text_answer'].apply(
+    ast.literal_eval)
 
 INTRODUCTION = """
         Sei un chatbot gentile che risponde ai clienti di Lavazza per assisterli sui suoi prodotti.
@@ -108,7 +109,6 @@ def query_message(
     model: str,
     token_budget: int
 ) -> str:
-
     """
     Return a message for GPT, 
     with relevant source texts pulled from a dataframe.
@@ -118,7 +118,6 @@ def query_message(
         query, df)
     # print(strings[0])
     # print(answers[0])
-    
 
     question = f"\n\nDomanda: {query}"
     message = INTRODUCTION
@@ -148,14 +147,13 @@ def ask_gpt(
     token_budget: int = 4096 - 500,
     print_message: bool = False,
 ) -> str:
-    
     """Answers a query using GPT and a dataframe of relevant texts and embeddings."""
 
     message = query_message(query, df, model=model, token_budget=token_budget)
     if print_message:
         print(message)
 
-    model_= "ft:gpt-3.5-turbo-0613:stip:lavazza-ft:8G9cCh9V"
+    model_ = "ft:gpt-3.5-turbo-0613:stip:lavazza-ft:8G9cCh9V"
     messages = [
         {"role": "system", "content": "Sei un chatbot che risponde ai clienti di Lavazza per assisterli sui suoi prodotti."},
         {"role": "user", "content": message if not fine_tuning else INTRODUCTION + "\n" + query},
@@ -174,19 +172,19 @@ def main(Q: str,
          gpt4: bool,
          fine_tuning: bool,
          print_: bool):
-    
-    #print(gpt4, fine_tuning)
-    assert Q is not None, "Insert a Query please"
-    #while Q.lower() != "stop":
-    if fine_tuning:
-        print(ask_gpt(query=Q,fine_tuning=fine_tuning, print_message=print_))
-    else:
-        if gpt4: 
-            print(ask_gpt(query=Q, print_message=print_, model="gpt-4"))
-        else: 
-            print(ask_gpt(query=Q, print_message=print_))
-        
 
+    # print(gpt4, fine_tuning)
+    assert Q is not None, "Insert a Query please"
+    if Q[-1] != "?":
+        Q += "?"
+    # while Q.lower() != "stop":
+    if fine_tuning:
+        print(ask_gpt(query=Q, fine_tuning=fine_tuning, print_message=print_))
+    else:
+        if gpt4:
+            print(ask_gpt(query=Q, print_message=print_, model="gpt-4"))
+        else:
+            print(ask_gpt(query=Q, print_message=print_))
 
 
 if __name__ == "__main__":
