@@ -2,7 +2,7 @@
 
 # Install dependencies
 pip install spacy
-pip install openai
+pip install openai==0.28.1
 pip install tiktoken
 pip install argparse
 pip install pandas
