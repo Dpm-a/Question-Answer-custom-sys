@@ -1,4 +1,5 @@
 import re
+import os
 import ast
 import spacy
 import openai
@@ -7,27 +8,29 @@ import tiktoken
 import pandas as pd
 from scipy import spatial  # for calculating vector similarities for search
 
-openai.api_key = "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"
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # models
 EMBEDDING_MODEL = "text-embedding-ada-002"
 GPT_MODEL = "gpt-3.5-turbo"
 # Load the Italian language model
 nlp = spacy.load('it_core_news_sm')
-df3 = pd.read_csv("../data/embedded_stip.csv")
+df3 = pd.read_csv("../data/embeddings.csv")
 # convert embeddings from CSV str type back to list type
 df3['embedding_text_answer'] = df3['embedding_text_answer'].apply(
     ast.literal_eval)
 
 INTRODUCTION = """
-        Sei un chatbot gentile che risponde ai clienti di Lavazza per assisterli sui suoi prodotti.
-        Per rispondere, utilizza le seguenti coppie di domande e risposte fatte dai clienti algi assistenti che lavorano per l'azienda Lavazza. 
+        Sei un chatbot particolarmente gentile che risponde ai clienti di UNK per assisterli sui suoi prodotti.
+        Per rispondere, utilizza le seguenti coppie di domande e risposte fatte dai clienti algi assistenti che lavorano per l'azienda UNK. 
         Se hai a disposizione molte informazioni, preferisci rispondere basandoti sulla data più recente.
         Sii il più specifico possibile, fornisci links e/o numero di telefono se necessario.
-        Se non trovi una risposta specifica vai sul sito ufficiale "https://www.lavazza.it/it/" e cerca il prodotto che viene richiesto, fornendo il link completo al cliente.
+        Se non trovi una risposta specifica vai sul sito ufficiale "https://www.UNK.it/it/" e cerca il prodotto che viene richiesto, fornendo il link completo al cliente.
         Se la domanda/affermazione fa emergere delle complicanze rispondi scusandoti ed invitando a contattare il servizio clienti al 
-        Numero Verde 800124535 o all'indirizzo e-mail info@lavazza.it"
-        Se non trovi risposta rispondi 'Non trovo una risposta, puoi essere più specifico?' 
+        Numero Verde 800124535 o all'indirizzo e-mail info@UNK.it"
+        Se non trovi risposta rispondi 'Non trovo una risposta, puoi essere più specifico?'
+        
+        Di seguito le coppie di domande e risposte:
         """
 
 
@@ -51,14 +54,14 @@ def preprocess_text(text: str, answer: bool = False, train_data: bool = False):
     text = re.sub(r'x|X', 'per', text)
 
     if train_data:
-        if text.startswith("Lavazza"):
+        if text.startswith("UNK"):
             text = text[8:]
 
         names = []
         # Process the text with the NER model
         doc = nlp(text)
         for entity in doc.ents:
-            if entity.label_ == "PER" and text.startswith(entity.text) and len(entity.text.split()) > 1 and "Lavazza" not in entity.text:
+            if entity.label_ == "PER" and text.startswith(entity.text) and len(entity.text.split()) > 1 and "UNK" not in entity.text:
                 text = re.sub(entity.text, '', text)
                 names.append(entity.text)
         if names:
@@ -153,9 +156,9 @@ def ask_gpt(
     if print_message:
         print(message)
 
-    model_ = "ft:gpt-3.5-turbo-0613:stip:lavazza-ft:8G9cCh9V"
+    model_ = "ft:gpt-3.5-turbo-0613:UNK:UNK-ft:8G9cCh9V"
     messages = [
-        {"role": "system", "content": "Sei un chatbot che risponde ai clienti di Lavazza per assisterli sui suoi prodotti."},
+        {"role": "system", "content": "Sei un chatbot che risponde ai clienti di UNK per assisterli sui suoi prodotti."},
         {"role": "user", "content": message if not fine_tuning else INTRODUCTION + "\n" + query},
     ]
 
