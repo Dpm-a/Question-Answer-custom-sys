@@ -1,4 +1,5 @@
-./Notebook/Stip*
-*jsonl
-embedded_stip.csv
+Notebook/Stip*.*
+Notebook/embedded_stip.csv
+data/embedded_stip.csv
+data/*jsonl
 link.stip
